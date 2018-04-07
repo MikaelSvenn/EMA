@@ -1,0 +1,23 @@
+{
+  "name": "ema-api",
+  "version": "1.0.0",
+  "description": "Electronic Mail Apparatus Api",
+  "main": "index.js",
+  "author": "Mikael Svenn",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "babel-node --presets es2015 index",
+    "test": "eslint index.js"
+  },
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "eslint": "^4.19.1",
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.10.0"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "ema-ui",
+  "version": "1.0.0",
+  "description": "Electronic Mail Apparatus Ui",
+  "author": "Mikael Svenn",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "eslint": "^4.19.1",
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1",
+    "react-scripts": "1.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.10.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0"
+  }
+}
