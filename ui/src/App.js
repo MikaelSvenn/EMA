@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { createMuiTheme } from 'material-ui/styles';
 import { gray, red, pink } from 'material-ui/colors';
-import TabContainer from './Tabs';
+import TabContainer from './Components/Tabs';
 import Header from './Header';
 import './App.css';
 

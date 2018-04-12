@@ -4,12 +4,17 @@ import Paper from 'material-ui/Paper';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import { withStyles } from 'material-ui/styles';
 import Icon from 'material-ui/Icon';
-import Message from './Message';
+import Message from '../Message';
 
 const styles = theme => ({
-  root: {
+  paper: {
     flexGrow: 1,
     marginTop: theme.spacing.unit * 3,
+    margin: 'auto',
+    width: '65%',
+    minHeight: 700,
+    textAling: 'center',
+    top: '50%',
   },
 });
 
@@ -27,17 +32,10 @@ class TabContainer extends Component {
   }
 
   render() {
-    const paperStyle = {
-      margin: 'auto',
-      width: '65%',
-      height: 700,
-      textAling: 'center',
-      top: '50%',
-    };
     const { classes } = this.props;
 
     return (
-        <Paper style={paperStyle} className={classes.root} elevation={6}>
+      <Paper className={classes.paper} elevation={6}>
         <Tabs value={this.state.value} onChange={this.handleChange} fullWidth centered indicatorColor="secondary" textColor="secondary">
           <Tab label="MESSAGE" icon={<Icon>chat</Icon>} />
           <Tab label="UPLOAD" icon={<Icon>cloud_upload</Icon>} />
