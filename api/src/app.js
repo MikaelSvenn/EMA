@@ -6,6 +6,7 @@ const api = express();
 const applicationMiddleware = middlewareWith(api);
 applicationMiddleware.useHelmet();
 
-api.get('/', (request, result) => result.send('Ok.'));
+api.get('/', (request, response) => response.send('Ok!'));
 
+applicationMiddleware.useExceptionHandler();
 export default api;
