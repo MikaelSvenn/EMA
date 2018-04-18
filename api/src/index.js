@@ -1,3 +1,7 @@
-import api from './app';
+import dotenv from 'dotenv';
+import createApi from './app';
 
-api.listen(27910);
+dotenv.config({ silent: true });
+
+const api = createApi();
+api.listen(process.env.LISTEN_ON);

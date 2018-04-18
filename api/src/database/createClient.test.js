@@ -31,7 +31,7 @@ describe('create client', () => {
       password: 'foobar',
     };
 
-    actual = connectToDatabase(redis, createClientOptions, options);
+    actual = connectToDatabase(options, redis, createClientOptions);
   });
 
   it('should create client options', () => {

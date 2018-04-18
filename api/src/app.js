@@ -1,28 +1,26 @@
 import express from 'express';
 import middlewareWith from './middleware';
+import bodyparser from './bodyparser';
 import routesWith from './route';
-import createDatabase from './database/database';
+import createDatabase from './database';
 import ping from './ping';
 import message from './message';
 
-const api = express();
+export default () => {
+  const api = express();
 
-const applicationMiddleware = middlewareWith(api);
-applicationMiddleware.useHelmet();
+  const applicationMiddleware = middlewareWith(api);
+  applicationMiddleware.useHelmet();
 
-const database = createDatabase({
-  host: 'localhost',
-  port: 27920,
-  password: 'assword',
-  maxConnectionRetries: 20,
-  reconnectAfterMilliseconds: 5000,
-});
+  const database = createDatabase();
 
-const routeHandler = routesWith(api);
-routeHandler.useRoutes({
-  '/ping': ping,
-  '/message': message(database),
-});
+  const routeHandler = routesWith(api);
+  routeHandler.useRoutes({
+    '/ping': ping,
+    '/message': message(database, bodyparser),
+  });
 
-applicationMiddleware.useExceptionHandler();
-export default api;
+  applicationMiddleware.useExceptionHandler();
+
+  return api;
+};

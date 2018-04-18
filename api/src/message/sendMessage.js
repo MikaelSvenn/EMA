@@ -1,4 +1,3 @@
-export default database => async (request, response) => {
-  await database.put(request.message);
-  response.sendStatus(200);
+export default database => (request, response) => {
+  throw new Error('not implemented');
 };
