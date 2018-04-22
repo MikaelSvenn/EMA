@@ -1,7 +1,9 @@
-import sanitizeJson from './sanitizeJson';
+import createSanitizer from './sanitizeDom';
+import onSanitize from './onSanitize';
 
 export default {
-  json: (request, response, buffer) => {
-    sanitizeJson(buffer);
+  dom: (request, response, buffer) => {
+    const sanitizer = createSanitizer(onSanitize);
+    sanitizer.sanitize(buffer.toString('utf8'));
   },
 };

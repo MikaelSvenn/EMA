@@ -6,6 +6,6 @@ export default (sanitizer, bodyParser = parser) => ({
     limit: '50kb',
     strict: true,
     type: 'application/json',
-    verify: sanitizer.json(),
+    verify: sanitizer.dom(),
   }),
 });

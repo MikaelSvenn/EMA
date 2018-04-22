@@ -1,6 +1,7 @@
 import express from 'express';
 import middlewareWith from './middleware';
-import bodyparser from './bodyparser';
+import createBodyparser from './bodyparser';
+import sanitizer from './sanitizer';
 import routesWith from './route';
 import createDatabase from './database';
 import ping from './ping';
@@ -15,6 +16,8 @@ export default () => {
   const database = createDatabase();
 
   const routeHandler = routesWith(api);
+  const bodyparser = createBodyparser(sanitizer);
+
   routeHandler.useRoutes({
     '/ping': ping,
     '/message': message(database, bodyparser),
