@@ -5,8 +5,8 @@ describe('retry strategy', () => {
   let strategy;
   beforeEach(() => {
     options = {
-      maxConnectionRetries: 10,
-      reconnectAfterMilliseconds: 500,
+      connectionRetries: 10,
+      reconnectInMilliseconds: 500,
     };
     strategy = createRetryStrategy(options);
   });

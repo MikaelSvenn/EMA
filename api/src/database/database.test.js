@@ -4,14 +4,18 @@ describe('database', () => {
   let createClient;
   let dbClient;
   let db;
-
-  process.env.DB_HOST = 'host';
-  process.env.DB_PORT = 'port';
-  process.env.DB_PASSWORD = 'word';
-  process.env.DB_MAX_CONNECTION_RETRIES = 10;
-  process.env.DB_RECONNECT_IN_MILLISECONDS = 100;
+  let config;
 
   beforeEach(() => {
+    config = {
+      database: {
+        host: 'host',
+        port: 'port',
+        password: 'word',
+        connectionRetries: 10,
+        reconnectInMilliseconds: 100,
+      },
+    };
     dbClient = {
       set: jest.fn(),
     };
@@ -19,17 +23,11 @@ describe('database', () => {
     createClient = jest.fn();
     createClient.mockReturnValue(dbClient);
 
-    db = database(createClient);
+    db = database(config, createClient);
   });
 
   it('should create client with options', () => {
-    expect(createClient).toHaveBeenCalledWith({
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      password: process.env.DB_PASSWORD,
-      maxConnectionRetries: process.env.DB_MAX_CONNECTION_RETRIES,
-      reconnectAfterMilliseconds: process.env.DB_RECONNECT_IN_MILLISECONDS,
-    });
+    expect(createClient).toHaveBeenCalledWith(config.database);
   });
 
   describe('insert', () => {

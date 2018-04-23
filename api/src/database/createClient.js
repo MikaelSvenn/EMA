@@ -1,10 +1,10 @@
 import redis from 'redis';
 import createClientOptions from './createClientOptions';
 
-export default (options, redisInstance = redis, createOptions = createClientOptions) => {
-  const clientOptions = createOptions(options);
+export default (dbConfig, redisInstance = redis, createOptions = createClientOptions) => {
+  const clientOptions = createOptions(dbConfig);
   const redisClient = redisInstance.createClient(clientOptions);
-  redisClient.auth(options.password);
+  redisClient.auth(dbConfig.password);
 
   return redisClient;
 };

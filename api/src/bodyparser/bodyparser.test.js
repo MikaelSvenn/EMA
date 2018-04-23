@@ -3,18 +3,17 @@ import bodyparser from './bodyparser';
 describe('bodyparser', () => {
   let parserInstance;
   let parser;
+  let sanitizer;
 
   beforeEach(() => {
-    const sanitizer = {
-      json: jest.fn(),
+    sanitizer = {
+      dom: jest.fn(),
     };
     parserInstance = {
       json: jest.fn(),
     };
 
-    sanitizer.json.mockReturnValue('jsonsanitizer');
     parserInstance.json.mockImplementation(options => options);
-
     parser = bodyparser(sanitizer, parserInstance);
   });
 
@@ -42,7 +41,7 @@ describe('bodyparser', () => {
     });
 
     it('should use json sanitizer', () => {
-      expect(actualOptions.verify).toEqual('jsonsanitizer');
+      expect(actualOptions.verify).toEqual(sanitizer.dom);
     });
   });
 });

@@ -3,9 +3,9 @@ export default options => (retry) => {
     return new Error('The database connection was refused.');
   }
 
-  if (retry.attempt > options.maxConnectionRetries) {
-    return new Error(`Could not connect to the database after ${options.maxConnectionRetries} retries`);
+  if (retry.attempt > options.connectionRetries) {
+    return new Error(`Could not connect to the database after ${options.connectionRetries} retries`);
   }
 
-  return options.reconnectAfterMilliseconds;
+  return options.reconnectInMilliseconds;
 };

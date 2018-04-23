@@ -7,13 +7,13 @@ import createDatabase from './database';
 import ping from './ping';
 import message from './message';
 
-export default () => {
+export default (config) => {
   const api = express();
 
   const applicationMiddleware = middlewareWith(api);
   applicationMiddleware.useHelmet();
 
-  const database = createDatabase();
+  const database = createDatabase(config);
 
   const routeHandler = routesWith(api);
   const bodyparser = createBodyparser(sanitizer);

@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
 import createApi from './app';
+import config from './config';
 
 dotenv.config({ silent: true });
 
-const api = createApi();
-api.listen(process.env.LISTEN_ON);
+const api = createApi(config);
+api.listen(config.server.listenOn);
