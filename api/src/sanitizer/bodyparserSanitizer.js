@@ -3,7 +3,7 @@ import onSanitize from './onSanitize';
 
 export default {
   dom: (request, response, buffer) => {
-    const sanitizer = createSanitizer(onSanitize);
-    sanitizer.sanitize(buffer.toString('utf8'));
+    const sanitize = createSanitizer(onSanitize);
+    sanitize(buffer.toString('utf8'));
   },
 };
