@@ -4,6 +4,7 @@ describe('create client', () => {
   let createClientOptions;
   let clientOptions;
   let redis;
+  let promisify;
   let createdClient;
   let options;
   let actual;
@@ -24,6 +25,9 @@ describe('create client', () => {
     };
 
     redis.createClient.mockReturnValue(createdClient);
+    promisify = {
+      promisifyAll: jest.fn(),
+    };
 
     options = {
       host: 'foo',
@@ -31,7 +35,7 @@ describe('create client', () => {
       password: 'foobar',
     };
 
-    actual = connectToDatabase(options, redis, createClientOptions);
+    actual = connectToDatabase(options, redis, createClientOptions, promisify);
   });
 
   it('should create client options', () => {
@@ -40,6 +44,10 @@ describe('create client', () => {
 
   it('should create client with client options', () => {
     expect(redis.createClient).toHaveBeenCalledWith(clientOptions);
+  });
+
+  it('should promisify the created client', () => {
+    expect(promisify.promisifyAll).toHaveBeenCalledWith(createdClient);
   });
 
   it('should authenticate with password', () => {

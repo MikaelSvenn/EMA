@@ -4,6 +4,7 @@ describe('database', () => {
   let createClient;
   let dbClient;
   let createContent;
+  let createDbContent;
   let db;
   let config;
   let hash;
@@ -20,15 +21,18 @@ describe('database', () => {
     };
 
     dbClient = {
-      set: jest.fn(),
+      setAsync: jest.fn(),
     };
     createClient = jest.fn();
     createClient.mockReturnValue(dbClient);
 
-    const createDbContent = jest.fn();
+    createDbContent = jest.fn();
     createContent = jest.fn();
     createContent.mockReturnValue(createDbContent);
-    createDbContent.mockImplementation(content => content);
+    createDbContent.mockImplementation(content => ({
+      key: `${content.key} created`,
+      value: `${content.value} created`,
+    }));
 
     hash = { foo: 'bar' };
     db = database(config, hash, createClient, createContent);
@@ -43,15 +47,21 @@ describe('database', () => {
   });
 
   describe('insert', () => {
+    let content;
     beforeEach(() => {
-      db.insert({
+      content = {
         key: 'foo',
         value: 'bar',
-      });
+      };
+      db.insert(content);
+    });
+
+    it('should create db content from the given content', () => {
+      expect(createDbContent).toHaveBeenCalledWith(content);
     });
 
     it('should set key with value', () => {
-      expect(dbClient.set).toHaveBeenCalledWith('foo', 'bar', 'NX');
+      expect(dbClient.setAsync).toHaveBeenCalledWith('foo created', '"bar created"', 'NX');
     });
   });
 });

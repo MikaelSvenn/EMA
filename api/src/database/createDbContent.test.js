@@ -18,15 +18,11 @@ describe('Create db content', () => {
     result = createContent(content, timestamp);
   });
 
-  it('should set key', () => {
+  it('should set key with content type', () => {
     expect(result.key).toEqual('foo|hashed');
   });
 
   describe('value', () => {
-    it('should contain type', () => {
-      expect(result.value.type).toEqual('foo');
-    });
-
     it('should contain timestamp', () => {
       expect(result.value.timestamp).toEqual(timestamp.getTime());
     });

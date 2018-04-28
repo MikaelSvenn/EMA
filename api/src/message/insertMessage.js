@@ -1,6 +1,5 @@
-export default (database, createDbContent, createMessage) => (request, response) => {
+export default (database, createMessage) => async (request, response) => {
   const message = createMessage(request);
-  const content = createDbContent('message', message);
-  database.insert(content);
+  await database.insert(message);
   response.sendStatus(200);
 };

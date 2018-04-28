@@ -1,4 +1,4 @@
-export default {
+export default () => ({
   server: {
     listenOn: process.env.LISTEN_ON,
   },
@@ -9,4 +9,4 @@ export default {
     connectionRetries: process.env.DB_MAX_CONNECTION_RETRIES,
     reconnectInMilliseconds: process.env.DB_RECONNECT_IN_MILLISECONDS,
   },
-};
+});

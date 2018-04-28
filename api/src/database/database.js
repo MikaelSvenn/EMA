@@ -6,9 +6,9 @@ export default (config, hash, createDbClient = createClient, createContent = map
   const createDbContent = createContent(hash);
 
   return {
-    insert: (content) => {
+    insert: async (content) => {
       const dbContent = createDbContent(content);
-      dbClient.set(dbContent.key, dbContent.value, 'NX');
+      await dbClient.setAsync(dbContent.key, JSON.stringify(dbContent.value), 'NX');
     },
   };
 };

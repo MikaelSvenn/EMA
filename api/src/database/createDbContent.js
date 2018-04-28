@@ -1,10 +1,8 @@
-export default hash => (content, timestamp = Date.now()) => {
-  const contentHash = hash(content);
-
+export default hash => (content, timestamp = new Date()) => {
+  const contentHash = hash(JSON.stringify(content));
   return {
     key: `${content.type}|${contentHash}`,
     value: {
-      type: content.type,
       timestamp: timestamp.getTime(),
       content,
     },
