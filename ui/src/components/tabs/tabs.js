@@ -4,7 +4,7 @@ import Paper from 'material-ui/Paper';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import { withStyles } from 'material-ui/styles';
 import Icon from 'material-ui/Icon';
-import Message from '../Message';
+import MessageView from '../../message';
 
 const styles = theme => ({
   paper: {
@@ -41,7 +41,7 @@ class TabContainer extends Component {
           <Tab label="UPLOAD" icon={<Icon>cloud_upload</Icon>} />
           <Tab label="DOWNLOAD" icon={<Icon>cloud_download</Icon>} />
         </Tabs>
-        {this.state.value === 0 && <Message />}
+        {this.state.value === 0 && <MessageView />}
       </Paper>
     );
   }
