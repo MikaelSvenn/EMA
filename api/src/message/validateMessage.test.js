@@ -5,9 +5,11 @@ describe('Validate message', () => {
   beforeEach(() => {
     message = {
       type: 'message',
-      source: 'source',
-      userAgent: 'useragent',
-      message: 'message',
+      value: {
+        source: 'source',
+        userAgent: 'useragent',
+        message: 'messageContent',
+      },
     };
   });
 
@@ -25,30 +27,30 @@ describe('Validate message', () => {
     });
 
     it('has no source', () => {
-      message.source = '';
+      message.value.source = '';
     });
 
     it('source is over 200 characters', () => {
       const input = 'a'.repeat(201);
-      message.source = input;
+      message.value.source = input;
     });
 
     it('has no useragent', () => {
-      message.userAgent = '';
+      message.value.userAgent = '';
     });
 
     it('useragent is over 200 characters', () => {
       const input = 'a'.repeat(201);
-      message.userAgent = input;
+      message.value.userAgent = input;
     });
 
     it('has no content', () => {
-      message.message = '';
+      message.value.message = '';
     });
 
     it('content is over 40000 characters', () => {
       const input = 'a'.repeat(40001);
-      message.message = input;
+      message.value.message = input;
     });
   });
 });

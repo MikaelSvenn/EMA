@@ -4,7 +4,7 @@ import createBodyparser from './bodyparser';
 import sanitizer from './sanitizer';
 import routesWith from './route';
 import createDatabase from './database';
-import crypto from './crypto';
+import createCrypto from './crypto';
 import ping from './ping';
 import message from './message';
 
@@ -14,6 +14,7 @@ export default (config) => {
   const applicationMiddleware = middlewareWith(api);
   applicationMiddleware.useHelmet();
 
+  const crypto = createCrypto(config);
   const database = createDatabase(config, crypto.hash);
 
   const routeHandler = routesWith(api);
@@ -21,7 +22,7 @@ export default (config) => {
 
   routeHandler.useRoutes({
     '/ping': ping,
-    '/message': message(database, bodyparser),
+    '/message': message(database, bodyparser, crypto.encryptInMemory),
   });
 
   applicationMiddleware.useExceptionHandler();

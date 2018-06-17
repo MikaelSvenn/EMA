@@ -76,7 +76,7 @@ rwIDAQAB
   };
 
   beforeEach(async () => {
-    const createContentKey = createContentKeyFactory(crypto, bluebird);
+    const createContentKey = createContentKeyFactory(crypto, bluebird.promisify);
     const createCipher = createCipherFactory(crypto);
     const encryptContentKey = encryptContentKeyFactory(crypto, publicRsaKey);
 
@@ -103,21 +103,25 @@ rwIDAQAB
     expect(encryptedOutput.toString('utf8')).not.toEqual(contentToEncrypt);
   });
 
-  it('ciphertext should decrypt to given input', () => {
-    const decryptionKey = crypto.privateDecrypt(privateRsaKey, encryptionResult.key);
-    const decipher = crypto.createDecipheriv('aes-256-gcm', decryptionKey, encryptionResult.iv);
+  const decrypt = () => {
+    const decryptionKey = crypto.privateDecrypt(privateRsaKey, Buffer.from(encryptionResult.key, 'base64'));
+    const decipher = crypto.createDecipheriv('aes-256-gcm', decryptionKey, Buffer.from(encryptionResult.iv, 'base64'));
 
-    decipher.setAuthTag(encryptionResult.tag);
-    decipher.setAAD(encryptionResult.iv);
+    decipher.setAuthTag(Buffer.from(encryptionResult.tag, 'base64'));
+    decipher.setAAD(Buffer.from(encryptionResult.iv, 'base64'));
 
     let decryptedContent = decipher.update(encryptedOutput, 'binary', 'utf8');
     decryptedContent += decipher.final('utf8');
+    return decryptedContent;
+  };
 
+  it('ciphertext should decrypt to given input', () => {
+    const decryptedContent = decrypt();
     expect(decryptedContent).toEqual(contentToEncrypt);
   });
 
   it('should obfuscate the original plaintext content key after encryption', async () => {
-    const createContentKey = createContentKeyFactory(crypto, bluebird);
+    const createContentKey = createContentKeyFactory(crypto, bluebird.promisify);
     const contentKey = await createContentKey();
 
     const createKeyMock = () => contentKey;
@@ -132,5 +136,24 @@ rwIDAQAB
 
     const expectedBuffer = Buffer.alloc(contentKey.length).fill('.');
     expect(contentKey).toEqual(expectedBuffer);
+  });
+
+  it('should fail decryption on tampered IV', () => {
+    const ivBuffer = Buffer.from(encryptionResult.iv, 'base64');
+    ivBuffer[0] += 1;
+    encryptionResult.iv = ivBuffer.toString('base64');
+    expect(() => decrypt()).toThrow();
+  });
+
+  it('should fail decryption on tampered signature', () => {
+    const tagBuffer = Buffer.from(encryptionResult.tag, 'base64');
+    tagBuffer[0] += 1;
+    encryptionResult.tag = tagBuffer.toString('base64');
+    expect(() => decrypt()).toThrow();
+  });
+
+  it('should fail decryption on tampered content', () => {
+    encryptedOutput[0] += 1;
+    expect(() => decrypt()).toThrow();
   });
 });

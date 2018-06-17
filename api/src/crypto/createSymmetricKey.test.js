@@ -23,9 +23,6 @@ describe('Create symmetric key', () => {
 
     promisify = jest.fn();
     promisify.mockReturnValue(pbkdf2);
-    const bluebirdMock = {
-      promisify,
-    };
 
     expectedResult = nodeCrypto.randomBytes(32).toString('base64');
     pbkdf2.mockImplementation((key, salt, iterations, keyLength, hash) => {
@@ -38,7 +35,7 @@ describe('Create symmetric key', () => {
       };
       return Promise.resolve(expectedResult);
     });
-    const createSymmetricKey = createSymmetricKeyFactory(crypto, bluebirdMock);
+    const createSymmetricKey = createSymmetricKeyFactory(crypto, promisify);
     result = await createSymmetricKey();
   });
 
@@ -82,7 +79,7 @@ describe('Create symmetric key (using actual node crypto)', () => {
   let key;
 
   beforeEach(async () => {
-    createSymmetricKey = createSymmetricKeyFactory(nodeCrypto, bluebird);
+    createSymmetricKey = createSymmetricKeyFactory(nodeCrypto, bluebird.promisify);
     key = await createSymmetricKey();
   });
 

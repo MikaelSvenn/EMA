@@ -4,7 +4,8 @@ export default hash => (content, timestamp = new Date()) => {
     key: `${content.type}|${contentHash}`,
     value: {
       timestamp: timestamp.getTime(),
-      content,
+      type: content.type,
+      content: content.value,
     },
   };
 };

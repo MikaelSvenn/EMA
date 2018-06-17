@@ -22,15 +22,15 @@ describe('Create message', () => {
   });
 
   it('should map request ip to source', () => {
-    expect(result.source).toEqual('request ip');
+    expect(result.value.source).toEqual('request ip');
   });
 
   it('should set userAgent by request header', () => {
-    expect(result.userAgent).toEqual('client user agent');
+    expect(result.value.userAgent).toEqual('client user agent');
   });
 
   it('should set message from request body', () => {
-    expect(result.message).toEqual('given message');
+    expect(result.value.message).toEqual('given message');
   });
 
   it('should validate the created message', () => {

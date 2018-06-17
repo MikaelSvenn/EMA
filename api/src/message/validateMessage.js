@@ -4,30 +4,30 @@ const error = (cause) => {
 
 export default (content) => {
   if (content.type !== 'message') {
-    error(`incorrect type: ${content.type}`);
+    error(`incorrect type: ${content.value.type}`);
   }
 
-  if (!content.source || content.source === '') {
+  if (!content.value.source || content.value.source === '') {
     error('source not defined');
   }
 
-  if (content.source.length > 200) {
-    error(`source is too long: ${content.source.length} characters`);
+  if (content.value.source.length > 200) {
+    error(`source is too long: ${content.value.source.length} characters`);
   }
 
-  if (!content.userAgent || content.userAgent === '') {
+  if (!content.value.userAgent || content.value.userAgent === '') {
     error('useragent not specified');
   }
 
-  if (content.userAgent.length > 200) {
-    error(`useragent is too long: ${content.userAgent.length} characters`);
+  if (content.value.userAgent.length > 200) {
+    error(`useragent is too long: ${content.value.userAgent.length} characters`);
   }
 
-  if (!content.message || content.message === '') {
+  if (!content.value.message || content.value.message === '') {
     error('message has no content');
   }
 
-  if (content.message.length > 40000) {
-    error(`message is too long: ${content.message.length} characters`);
+  if (content.value.message.length > 40000) {
+    error(`message is too long: ${content.value.message.length} characters`);
   }
 };

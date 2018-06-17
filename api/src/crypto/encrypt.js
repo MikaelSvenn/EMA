@@ -7,9 +7,9 @@ export default (createContentKey, encryptContentKey, createCipher) => async (con
     context.outputStream.on('finish', () => {
       contentKey.fill('.');
       resolve({
-        key: encryptedKey,
-        iv: cipherContext.iv,
-        tag: cipherContext.cipher.getAuthTag(),
+        key: encryptedKey.toString('base64'),
+        iv: cipherContext.iv.toString('base64'),
+        tag: cipherContext.cipher.getAuthTag().toString('base64'),
       });
     });
 

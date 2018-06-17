@@ -8,6 +8,7 @@ describe('Create db content', () => {
   beforeEach(() => {
     content = {
       type: 'foo',
+      value: 'bar',
     };
 
     const hash = jest.fn();
@@ -27,8 +28,12 @@ describe('Create db content', () => {
       expect(result.value.timestamp).toEqual(timestamp.getTime());
     });
 
+    it('should contain type', () => {
+      expect(result.value.type).toEqual('foo');
+    });
+
     it('should contain content', () => {
-      expect(result.value.content).toEqual(content);
+      expect(result.value.content).toEqual('bar');
     });
   });
 });
