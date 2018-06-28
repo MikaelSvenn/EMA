@@ -7,6 +7,7 @@ import createEncryptFactory from './encrypt';
 import createContentKeyFactory from './createSymmetricKey';
 import createCipherFactory from './createCipher';
 import encryptContentKeyFactory from './encryptContentKey';
+import { decrypt } from '../integrationtest';
 
 describe('Encrypt', () => {
   const privateRsaKey = `-----BEGIN PRIVATE KEY-----
@@ -103,20 +104,8 @@ rwIDAQAB
     expect(encryptedOutput.toString('utf8')).not.toEqual(contentToEncrypt);
   });
 
-  const decrypt = () => {
-    const decryptionKey = crypto.privateDecrypt(privateRsaKey, Buffer.from(encryptionResult.key, 'base64'));
-    const decipher = crypto.createDecipheriv('aes-256-gcm', decryptionKey, Buffer.from(encryptionResult.iv, 'base64'));
-
-    decipher.setAuthTag(Buffer.from(encryptionResult.tag, 'base64'));
-    decipher.setAAD(Buffer.from(encryptionResult.iv, 'base64'));
-
-    let decryptedContent = decipher.update(encryptedOutput, 'binary', 'utf8');
-    decryptedContent += decipher.final('utf8');
-    return decryptedContent;
-  };
-
   it('ciphertext should decrypt to given input', () => {
-    const decryptedContent = decrypt();
+    const decryptedContent = decrypt(privateRsaKey, encryptionResult, encryptedOutput);
     expect(decryptedContent).toEqual(contentToEncrypt);
   });
 
@@ -142,18 +131,18 @@ rwIDAQAB
     const ivBuffer = Buffer.from(encryptionResult.iv, 'base64');
     ivBuffer[0] += 1;
     encryptionResult.iv = ivBuffer.toString('base64');
-    expect(() => decrypt()).toThrow();
+    expect(() => decrypt(privateRsaKey, encryptionResult, encryptedOutput)).toThrow();
   });
 
   it('should fail decryption on tampered signature', () => {
     const tagBuffer = Buffer.from(encryptionResult.tag, 'base64');
     tagBuffer[0] += 1;
     encryptionResult.tag = tagBuffer.toString('base64');
-    expect(() => decrypt()).toThrow();
+    expect(() => decrypt(privateRsaKey, encryptionResult, encryptedOutput)).toThrow();
   });
 
   it('should fail decryption on tampered content', () => {
     encryptedOutput[0] += 1;
-    expect(() => decrypt()).toThrow();
+    expect(() => decrypt(privateRsaKey, encryptionResult, encryptedOutput)).toThrow();
   });
 });

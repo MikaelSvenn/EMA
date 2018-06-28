@@ -8,6 +8,6 @@ export default (encrypt, createReadStream, createWriteStream) => async (content)
   };
   const encryptionContext = await encrypt(context);
 
-  encryptionContext.content = writeStream.content().toString('base64');
+  encryptionContext.data = writeStream.content().toString('base64');
   return encryptionContext;
 };

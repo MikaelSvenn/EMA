@@ -28,6 +28,6 @@ describe('Encrypt in memory should', () => {
 
   it('should append encrypted content to output as base64-encoded string', () => {
     const expected = Buffer.from('"foobarbaz"').toString('base64');
-    expect(result.content).toEqual(expected);
+    expect(result.data).toEqual(expected);
   });
 });
