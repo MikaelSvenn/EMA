@@ -1,3 +1,5 @@
+/* eslint no-await-in-loop: 0 */
+import responseTime from 'superagent-response-time';
 import { http } from '../integrationtest';
 
 describe('GET /ping', () => {
@@ -13,4 +15,17 @@ describe('GET /ping', () => {
     .get('/ping')
     .set('x-forwarded-for', 'foobar')
     .expect('foobar'));
+
+  it('should execute subsequent requests with delay difference of over 80ms', async () => {
+    const responseTimes = [];
+    while (responseTimes.length < 10) {
+      await http().get('/ping').use(responseTime((_, time) => {
+        responseTimes.push(time);
+      }));
+    }
+    const shortestExecutionTime = Math.min(...responseTimes);
+    const longestExecutionTime = Math.max(...responseTimes);
+
+    expect(longestExecutionTime - shortestExecutionTime).toBeGreaterThanOrEqual(80);
+  });
 });

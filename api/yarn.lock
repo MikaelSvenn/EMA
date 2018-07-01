@@ -4562,6 +4562,10 @@ superagent-defaults@^0.1.14:
   dependencies:
     emitter-component "~1.0.1"
 
+superagent-response-time@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/superagent-response-time/-/superagent-response-time-1.0.3.tgz#118a6a6023fb8fdf3e1df158c7c2c669563848f8"
+
 superagent@3.8.2:
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/superagent/-/superagent-3.8.2.tgz#e4a11b9d047f7d3efeb3bbe536d9ec0021d16403"
