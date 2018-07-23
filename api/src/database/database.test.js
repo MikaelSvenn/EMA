@@ -22,7 +22,9 @@ describe('database', () => {
 
     dbClient = {
       setAsync: jest.fn(),
+      getAsync: jest.fn(),
     };
+    dbClient.getAsync.mockResolvedValue('{"content":"foobar"}');
     createClient = jest.fn();
     createClient.mockReturnValue(dbClient);
 
@@ -48,12 +50,13 @@ describe('database', () => {
 
   describe('insert', () => {
     let content;
-    beforeEach(() => {
+
+    beforeEach(async () => {
       content = {
         key: 'foo',
         value: 'bar',
       };
-      db.insert(content);
+      await db.insert(content);
     });
 
     it('should create db content from the given content', () => {
@@ -61,7 +64,60 @@ describe('database', () => {
     });
 
     it('should set key with value', () => {
-      expect(dbClient.setAsync).toHaveBeenCalledWith('foo created', '"bar created"', 'NX');
+      expect(dbClient.setAsync).toHaveBeenCalledWith(['foo created', '"bar created"', 'NX']);
+    });
+
+    it('with expiration should set key with given expiration', async () => {
+      await db.insert(content, 600);
+      expect(dbClient.setAsync).toHaveBeenCalledWith(['foo created', '"bar created"', 'NX', 'EX', 600]);
+    });
+  });
+
+  describe('update', () => {
+    let content;
+
+    beforeEach(async () => {
+      content = {
+        key: 'foo',
+        value: 'bar',
+      };
+      await db.update(content);
+    });
+
+    it('should create db content from the given content', () => {
+      expect(createDbContent).toHaveBeenCalledWith(content);
+    });
+
+    it('should set key with value', () => {
+      expect(dbClient.setAsync).toHaveBeenCalledWith(['foo created', '"bar created"', 'XX']);
+    });
+
+    it('with expiration should set key with given expiration', async () => {
+      await db.update(content, 600);
+      expect(dbClient.setAsync).toHaveBeenCalledWith(['foo created', '"bar created"', 'XX', 'EX', 600]);
+    });
+  });
+
+  describe('read', () => {
+    let result;
+    beforeEach(async () => {
+      result = await db.read('foo', 'bar');
+    });
+
+    it('should get given content by given key', () => {
+      expect(dbClient.getAsync).toHaveBeenCalledWith('foo|bar');
+    });
+
+    it('should return content as json object', () => {
+      expect(result).toEqual({
+        content: 'foobar',
+      });
+    });
+
+    it('should return false when no content is returned', async () => {
+      dbClient.getAsync.mockResolvedValue(undefined);
+      result = await db.read('foo', 'bar');
+      expect(result).toEqual(false);
     });
   });
 });

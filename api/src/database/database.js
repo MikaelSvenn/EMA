@@ -5,10 +5,30 @@ export default (config, hash, createDbClient = createClient, createContent = map
   const dbClient = createDbClient(config.database);
   const createDbContent = createContent(hash);
 
+  const writeToDatabase = async (content, mode, expiration) => {
+    const dbContent = createDbContent(content);
+    const setParameters = [dbContent.key, JSON.stringify(dbContent.value), mode];
+    if (expiration) {
+      setParameters.push('EX');
+      setParameters.push(expiration);
+    }
+
+    await dbClient.setAsync(setParameters);
+  };
+
   return {
-    insert: async (content) => {
-      const dbContent = createDbContent(content);
-      await dbClient.setAsync(dbContent.key, JSON.stringify(dbContent.value), 'NX');
+    insert: async (content, expiration) => {
+      await writeToDatabase(content, 'NX', expiration);
+    },
+    read: async (type, key) => {
+      const result = await dbClient.getAsync(`${type}|${key}`);
+      if (result) {
+        return JSON.parse(result);
+      }
+      return false;
+    },
+    update: async (content, expiration) => {
+      await writeToDatabase(content, 'XX', expiration);
     },
   };
 };
