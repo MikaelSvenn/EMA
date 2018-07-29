@@ -23,7 +23,9 @@ export default (config, hash, createDbClient = createClient, createContent = map
     read: async (type, key) => {
       const result = await dbClient.getAsync(`${type}|${key}`);
       if (result) {
-        return JSON.parse(result);
+        const entity = JSON.parse(result);
+        entity.key = key;
+        return entity;
       }
       return false;
     },

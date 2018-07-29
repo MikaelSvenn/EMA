@@ -1,11 +1,19 @@
 export default hash => (content, timestamp = new Date()) => {
-  const contentHash = hash(JSON.stringify(content));
+  let contentKey;
+
+  if (content.key) {
+    contentKey = `${content.type}|${content.key}`;
+  } else {
+    const contentHash = hash(JSON.stringify(content));
+    contentKey = `${content.type}|${contentHash}`;
+  }
+
   return {
-    key: `${content.type}|${contentHash}`,
+    key: contentKey,
     value: {
       timestamp: timestamp.getTime(),
       type: content.type,
-      content: content.value,
+      value: content.value,
     },
   };
 };

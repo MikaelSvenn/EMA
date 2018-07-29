@@ -4,6 +4,7 @@ describe('Create db content', () => {
   let result;
   let timestamp;
   let content;
+  let createContent;
 
   beforeEach(() => {
     content = {
@@ -15,12 +16,20 @@ describe('Create db content', () => {
     hash.mockReturnValue('hashed');
     timestamp = new Date(2010, 1, 1);
 
-    const createContent = createDbContent(hash);
+    createContent = createDbContent(hash);
     result = createContent(content, timestamp);
   });
 
-  it('should set key with content type', () => {
-    expect(result.key).toEqual('foo|hashed');
+  describe('key', () => {
+    it('should set the given content key', () => {
+      content.key = 'givencontentkey';
+      result = createContent(content, timestamp);
+      expect(result.key).toEqual('foo|givencontentkey');
+    });
+
+    it('should set key with content hash when key does not exist', () => {
+      expect(result.key).toEqual('foo|hashed');
+    });
   });
 
   describe('value', () => {
@@ -33,7 +42,7 @@ describe('Create db content', () => {
     });
 
     it('should contain content', () => {
-      expect(result.value.content).toEqual('bar');
+      expect(result.value.value).toEqual('bar');
     });
   });
 });

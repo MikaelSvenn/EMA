@@ -10,6 +10,8 @@ describe('Set request trace', () => {
   let createTrace;
   let updateTraceFactory;
   let updateTrace;
+  let verifySignatureFactory;
+  let verifySignature;
 
   beforeEach(() => {
     database = {
@@ -32,8 +34,11 @@ describe('Set request trace', () => {
     updateTrace = jest.fn();
     updateTraceFactory = jest.fn();
     updateTraceFactory.mockReturnValue(updateTrace);
+    verifySignature = jest.fn();
+    verifySignatureFactory = jest.fn();
+    verifySignatureFactory.mockReturnValue(verifySignature);
 
-    setTrace = setTraceFactory(database, hash, createKey, createTraceFactory, updateTraceFactory);
+    setTrace = setTraceFactory(database, hash, createKey, createTraceFactory, updateTraceFactory, verifySignatureFactory);
   });
 
   it('initialization should create two keys as base64', () => {
@@ -48,6 +53,10 @@ describe('Set request trace', () => {
 
   it('initialization should initialize updateTrace with both created keys', () => {
     expect(updateTraceFactory).toHaveBeenCalledWith(hash, 'sessionkey', 'signaturekey');
+  });
+
+  it('initialization should initialize verifySignature', () => {
+    expect(verifySignatureFactory).toHaveBeenCalledWith(hash);
   });
 
   it('should create trace id from client ip', async () => {
@@ -84,7 +93,11 @@ describe('Set request trace', () => {
     });
 
     it('should insert the created trace to database', () => {
-      expect(database.insert).toHaveBeenCalledWith('createdtrace');
+      expect(database.insert).toHaveBeenCalledWith('createdtrace', 600);
+    });
+
+    it('should not verify signature', () => {
+      expect(verifySignature).not.toHaveBeenCalled();
     });
 
     it('should not update the created trace to database', () => {
@@ -108,6 +121,10 @@ describe('Set request trace', () => {
       result = await setTrace(client);
     });
 
+    it('should verify signature', () => {
+      expect(verifySignature).toHaveBeenCalledWith('previouslyCreatedTrace', 'signaturekey');
+    });
+
     it('should not create a new trace', () => {
       expect(createTrace).not.toHaveBeenCalled();
     });
@@ -121,7 +138,7 @@ describe('Set request trace', () => {
     });
 
     it('should update the updated trace to database', () => {
-      expect(database.update).toHaveBeenCalledWith('previouslyCreatedTrace');
+      expect(database.update).toHaveBeenCalledWith('previouslyCreatedTrace', 600);
     });
 
     it('should return the updated trace', () => {

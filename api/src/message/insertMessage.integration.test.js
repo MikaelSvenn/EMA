@@ -16,7 +16,6 @@ describe('POST /message should', () => {
       .post('/message')
       .set('user-agent', 'foobarAgent')
       .send({
-        type: 'message',
         message: 'Foobar test message!',
       });
 
@@ -24,11 +23,10 @@ describe('POST /message should', () => {
       .post('/message')
       .set('user-agent', 'foobarAgent')
       .send({
-        type: 'message',
         message: 'Foobar test message!',
       });
 
-    messageKeys = await redis.keysAsync('*');
+    messageKeys = await redis.keysAsync('message*');
     initialMessageContent = await redis.getAsync(messageKeys[0]);
     initialMessage = JSON.parse(initialMessageContent);
     privateRsaKey = fs.readFileSync(process.env.PRIVATE_KEY_PATH, { encoding: 'utf8' });
@@ -61,68 +59,67 @@ describe('POST /message should', () => {
   });
 
   it('not include other content properties than key, iv, tag and data', () => {
-    expect(Object.keys(initialMessage.content).length).toEqual(4);
+    expect(Object.keys(initialMessage.value).length).toEqual(4);
   });
 
   it('include key', () => {
-    expect(initialMessage.content.key.length).toBeGreaterThan(0);
+    expect(initialMessage.value.key.length).toBeGreaterThan(0);
   });
 
   it('include initialization vector', () => {
-    expect(initialMessage.content.iv.length).toBeGreaterThan(0);
+    expect(initialMessage.value.iv.length).toBeGreaterThan(0);
   });
 
   it('include authentication tag', () => {
-    expect(initialMessage.content.tag.length).toBeGreaterThan(0);
+    expect(initialMessage.value.tag.length).toBeGreaterThan(0);
   });
 
   it('encrypt the message', () => {
-    expect(initialMessage.content.data.length).toBeGreaterThan(0);
+    expect(initialMessage.value.data.length).toBeGreaterThan(0);
     const nonEncryptedMessage = JSON.stringify({
-      type: 'message',
       message: 'Foobar test message!',
     });
-    expect(initialMessage.content.data).not.toEqual(Buffer.from(nonEncryptedMessage).toString('base64'));
+    expect(initialMessage.value.data).not.toEqual(Buffer.from(nonEncryptedMessage).toString('base64'));
   });
 
   it('encrypt the message encryption key with given public key', () => {
-    const encryptedContentBuffer = Buffer.from(initialMessage.content.data, 'base64');
-    expect(() => decrypt(privateRsaKey, initialMessage.content, encryptedContentBuffer)).not.toThrow();
+    const encryptedContentBuffer = Buffer.from(initialMessage.value.data, 'base64');
+    expect(() => decrypt(privateRsaKey, initialMessage.value, encryptedContentBuffer)).not.toThrow();
   });
 
   it('result in different ciphertext length with duplicate message', async () => {
     const secondMessageContent = await redis.getAsync(messageKeys[1]);
     const secondMessage = JSON.parse(secondMessageContent);
 
-    expect(initialMessage.content.data.length).not.toEqual(secondMessage.content.data.length);
+    expect(initialMessage.value.data.length).not.toEqual(secondMessage.value.data.length);
   });
 
   it('result in different ciphertext with same duplicate message', async () => {
     const secondMessageContent = await redis.getAsync(messageKeys[1]);
     const secondMessage = JSON.parse(secondMessageContent);
 
-    expect(initialMessage.content.data).not.toEqual(secondMessage.content.data);
+    expect(initialMessage.value.data).not.toEqual(secondMessage.value.data);
   });
 
   it('include source ip in ciphertext', () => {
-    const encryptedContentBuffer = Buffer.from(initialMessage.content.data, 'base64');
-    const decryptedMessage = decrypt(privateRsaKey, initialMessage.content, encryptedContentBuffer);
+    const encryptedContentBuffer = Buffer.from(initialMessage.value.data, 'base64');
+    const decryptedMessage = decrypt(privateRsaKey, initialMessage.value, encryptedContentBuffer);
     const decryptedContent = JSON.parse(decryptedMessage);
 
     expect(decryptedContent.source).toEqual('::ffff:127.0.0.1');
   });
 
   it('include source user agent in ciphertext', () => {
-    const encryptedContentBuffer = Buffer.from(initialMessage.content.data, 'base64');
-    const decryptedMessage = decrypt(privateRsaKey, initialMessage.content, encryptedContentBuffer);
+    const encryptedContentBuffer = Buffer.from(initialMessage.value.data, 'base64');
+    const decryptedMessage = decrypt(privateRsaKey, initialMessage.value, encryptedContentBuffer);
     const decryptedContent = JSON.parse(decryptedMessage);
 
     expect(decryptedContent.userAgent).toEqual('foobarAgent');
   });
 
   it('include the message content in ciphertext', () => {
-    const encryptedContentBuffer = Buffer.from(initialMessage.content.data, 'base64');
-    const decryptedMessage = decrypt(privateRsaKey, initialMessage.content, encryptedContentBuffer);
+    const encryptedContentBuffer = Buffer.from(initialMessage.value.data, 'base64');
+    const decryptedMessage = decrypt(privateRsaKey, initialMessage.value, encryptedContentBuffer);
     const decryptedContent = JSON.parse(decryptedMessage);
 
     expect(decryptedContent.message).toEqual('Foobar test message!');

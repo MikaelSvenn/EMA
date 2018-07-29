@@ -111,6 +111,7 @@ describe('database', () => {
     it('should return content as json object', () => {
       expect(result).toEqual({
         content: 'foobar',
+        key: 'bar',
       });
     });
 

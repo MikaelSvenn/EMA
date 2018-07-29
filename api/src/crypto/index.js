@@ -3,7 +3,7 @@ import fs from 'fs';
 import bluebird from 'bluebird';
 import createHash from './hash';
 import readPublicKey from './readPublicRsaKey';
-import createKey from './createSymmetricKey';
+import createSymmetricKey, { createSync } from './createSymmetricKey';
 import createCipher from './createCipher';
 import encryptContentKey from './encryptContentKey';
 import createEncrypt from './encrypt';
@@ -13,10 +13,14 @@ import createWriteStream from './createWriteStream';
 
 export default (config) => {
   const publicKey = readPublicKey(fs, crypto, config);
-  const encrypt = createEncrypt(createKey(crypto, bluebird.promisify), encryptContentKey(crypto, publicKey), createCipher(crypto));
+  const createKey = createSymmetricKey(crypto, bluebird.promisify);
+  const createKeySync = createSync(crypto);
+  const encrypt = createEncrypt(createKey, encryptContentKey(crypto, publicKey), createCipher(crypto));
 
   return {
     hash: createHash(),
+    createKey,
+    createKeySync,
     encrypt,
     encryptInMemory: createEncryptInMemory(encrypt, createReadStream, createWriteStream),
   };
