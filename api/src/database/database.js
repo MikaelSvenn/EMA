@@ -1,8 +1,15 @@
 import createClient from './createClient';
 import mapDbContent from './createDbContent';
+import createDbMutex from './createMutex';
 
-export default (config, hash, createDbClient = createClient, createContent = mapDbContent) => {
+export default (config, hash, createDbClient = createClient, createContent = mapDbContent, createMutex = createDbMutex) => {
   const dbClient = createDbClient(config.database);
+  const mutex = createMutex(dbClient, {
+    retryCount: 20,
+    retryDelay: 30,
+    retryJitter: 10,
+  });
+
   const createDbContent = createContent(hash);
 
   const writeToDatabase = async (content, mode, expiration) => {
@@ -32,5 +39,6 @@ export default (config, hash, createDbClient = createClient, createContent = map
     update: async (content, expiration) => {
       await writeToDatabase(content, 'XX', expiration);
     },
+    lock: async resource => mutex.lock(resource, 1000),
   };
 };

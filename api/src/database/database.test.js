@@ -5,9 +5,11 @@ describe('database', () => {
   let dbClient;
   let createContent;
   let createDbContent;
+  let createMutex;
   let db;
   let config;
   let hash;
+  let mutex;
 
   beforeEach(() => {
     config = {
@@ -36,8 +38,15 @@ describe('database', () => {
       value: `${content.value} created`,
     }));
 
+    mutex = {
+      lock: jest.fn(),
+    };
+    mutex.lock.mockResolvedValue('acquired lock');
+    createMutex = jest.fn();
+    createMutex.mockReturnValue(mutex);
+
     hash = { foo: 'bar' };
-    db = database(config, hash, createClient, createContent);
+    db = database(config, hash, createClient, createContent, createMutex);
   });
 
   it('should create client with options', () => {
@@ -46,6 +55,14 @@ describe('database', () => {
 
   it('should create content creator with hash', () => {
     expect(createContent).toHaveBeenCalledWith(hash);
+  });
+
+  it('should create mutex', () => {
+    expect(createMutex).toHaveBeenCalledWith(dbClient, {
+      retryCount: 20,
+      retryDelay: 30,
+      retryJitter: 10,
+    });
   });
 
   describe('insert', () => {
@@ -119,6 +136,22 @@ describe('database', () => {
       dbClient.getAsync.mockResolvedValue(undefined);
       result = await db.read('foo', 'bar');
       expect(result).toEqual(false);
+    });
+  });
+
+  describe('lock', () => {
+    let result;
+
+    beforeEach(async () => {
+      result = await db.lock('given content');
+    });
+
+    it('should acquire lock with 1000ms expiration', () => {
+      expect(mutex.lock).toHaveBeenCalledWith('given content', 1000);
+    });
+
+    it('should return the acquired lock', () => {
+      expect(result).toEqual('acquired lock');
     });
   });
 });

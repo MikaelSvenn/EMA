@@ -12,13 +12,20 @@ describe('Set request trace', () => {
   let updateTrace;
   let verifySignatureFactory;
   let verifySignature;
+  let mutex;
 
   beforeEach(() => {
     database = {
       read: jest.fn(),
       insert: jest.fn(),
       update: jest.fn(),
+      lock: jest.fn(),
     };
+
+    mutex = {
+      unlock: jest.fn(),
+    };
+    database.lock.mockResolvedValue(mutex);
 
     hash = jest.fn();
     hash.mockReturnValue('hashedClientId');
@@ -67,6 +74,11 @@ describe('Set request trace', () => {
     expect(hash).toHaveBeenCalledWith('fooip', 'sessionkey');
   });
 
+  it('should acquire mutex with traceId', async () => {
+    await setTrace({});
+    expect(database.lock).toHaveBeenCalledWith('mutex|hashedClientId');
+  });
+
   it('should read given trace by id', async () => {
     await setTrace({});
     expect(database.read).toHaveBeenCalledWith('trace', 'hashedClientId');
@@ -107,6 +119,10 @@ describe('Set request trace', () => {
     it('should return the created trace', () => {
       expect(result).toEqual('createdtrace');
     });
+
+    it('should release mutex', () => {
+      expect(mutex.unlock).toHaveBeenCalled();
+    });
   });
 
   describe('when a previous trace is found', () => {
@@ -143,6 +159,10 @@ describe('Set request trace', () => {
 
     it('should return the updated trace', () => {
       expect(result).toEqual('previouslyCreatedTrace');
+    });
+
+    it('should release mutex', () => {
+      expect(mutex.unlock).toHaveBeenCalled();
     });
   });
 });

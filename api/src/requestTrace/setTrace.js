@@ -11,16 +11,21 @@ export default (database, hash, createKey, createTrace = createTraceFactory, upd
 
   return async (client) => {
     const traceId = hash(client.ip, sessionKey);
+    const lock = await database.lock(`mutex|${traceId}`);
     let trace = await database.read('trace', traceId);
 
     if (!trace) {
       trace = create(client);
-      return database.insert(trace, 600);
+      const createdTrace = await database.insert(trace, 600);
+      await lock.unlock();
+      return createdTrace;
     }
 
     verify(trace, signatureKey);
     trace = update(trace, client);
+    const updatedTrace = await database.update(trace, 600);
 
-    return database.update(trace, 600);
+    await lock.unlock();
+    return updatedTrace;
   };
 };
