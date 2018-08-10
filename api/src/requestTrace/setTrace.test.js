@@ -76,7 +76,7 @@ describe('Set request trace', () => {
 
   it('should acquire mutex with traceId', async () => {
     await setTrace({});
-    expect(database.lock).toHaveBeenCalledWith('mutex|hashedClientId');
+    expect(database.lock).toHaveBeenCalledWith('hashedClientId');
   });
 
   it('should read given trace by id', async () => {

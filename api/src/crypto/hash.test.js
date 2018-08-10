@@ -71,10 +71,8 @@ describe('Hash', () => {
       const actualHash = createHash();
       const results = Array(100).fill().map(() => actualHash('foo'));
 
-      results.forEach((item) => {
-        const resultsWithoutItem = results.filter(element => element !== item);
-        expect(resultsWithoutItem).not.toContain(item);
-      });
+      const uniqueDigests = [...new Set(results)];
+      expect(uniqueDigests.length).toEqual(100);
     });
 
     testHash();

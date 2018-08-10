@@ -1,8 +1,12 @@
 /* eslint no-await-in-loop: 0 */
 import responseTime from 'superagent-response-time';
-import { http } from '../integrationtest';
+import { http, redis } from '../integrationtest';
 
 describe('GET /ping', () => {
+  afterAll(() => {
+    redis.flushall();
+  });
+
   it('should return http 200', () => http()
     .get('/ping')
     .expect(200));

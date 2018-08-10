@@ -39,6 +39,6 @@ export default (config, hash, createDbClient = createClient, createContent = map
     update: async (content, expiration) => {
       await writeToDatabase(content, 'XX', expiration);
     },
-    lock: async resource => mutex.lock(resource, 1000),
+    lock: async resource => mutex.lock(`mutex|${resource}`, 1000),
   };
 };

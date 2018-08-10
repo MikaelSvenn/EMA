@@ -20,8 +20,8 @@ describe('Request trace', () => {
     initialTrace = JSON.parse(initialTrace);
   });
 
-  afterAll(async () => {
-    await redis.flushallAsync();
+  afterAll(() => {
+    redis.flushall();
   });
 
   describe('should create new trace with', () => {
@@ -64,7 +64,7 @@ describe('Request trace', () => {
     describe('containing client with', () => {
       let client;
 
-      beforeEach(() => {
+      beforeAll(() => {
         client = initialTrace.value.clients[Object.keys(initialTrace.value.clients)[0]];
       });
 
@@ -159,7 +159,7 @@ describe('Request trace', () => {
     describe('updated client when request originates from a previous client', () => {
       let client;
 
-      beforeEach(() => {
+      beforeAll(() => {
         client = updatedTrace.value.clients[Object.keys(updatedTrace.value.clients)[0]];
       });
 

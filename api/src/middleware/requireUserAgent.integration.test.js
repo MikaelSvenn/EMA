@@ -1,6 +1,10 @@
-import { http } from '../integrationtest';
+import { http, redis } from '../integrationtest';
 
 describe('Require user agent', () => {
+  afterAll(() => {
+    redis.flushall();
+  });
+
   it('should return http 200 when user-agent header is present', () => http()
     .get('/ping')
     .set('user-agent', 'foo')

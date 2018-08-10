@@ -147,7 +147,7 @@ describe('database', () => {
     });
 
     it('should acquire lock with 1000ms expiration', () => {
-      expect(mutex.lock).toHaveBeenCalledWith('given content', 1000);
+      expect(mutex.lock).toHaveBeenCalledWith('mutex|given content', 1000);
     });
 
     it('should return the acquired lock', () => {

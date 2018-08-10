@@ -32,8 +32,8 @@ describe('POST /message should', () => {
     privateRsaKey = fs.readFileSync(process.env.PRIVATE_KEY_PATH, { encoding: 'utf8' });
   });
 
-  afterAll(async () => {
-    await redis.flushallAsync();
+  afterAll(() => {
+    redis.flushall();
   });
 
   it('return http 200', () => {
