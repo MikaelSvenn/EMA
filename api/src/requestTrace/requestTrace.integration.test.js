@@ -30,8 +30,8 @@ describe('Request trace', () => {
     });
 
     it('timestamp', () => {
-      const elapsedMilliseconds = currentTime - initialTrace.value.createdOn;
-      expect(elapsedMilliseconds).toBeLessThan(100);
+      const elapsedMilliseconds = initialTrace.value.createdOn - currentTime;
+      expect(elapsedMilliseconds).toBeLessThan(500);
     });
 
     it('requestCount', () => {
@@ -59,6 +59,7 @@ describe('Request trace', () => {
     it('expiry time of 600 seconds', async () => {
       const expiration = await redis.pttlAsync(initialTraceKey);
       expect(expiration).toBeGreaterThan(599500);
+      expect(expiration).toBeLessThan(600000);
     });
 
     describe('containing client with', () => {
@@ -170,7 +171,7 @@ describe('Request trace', () => {
       it('requestsReceivedOn', () => {
         expect(client.requestsReceivedOn.length).toEqual(2);
         expect(client.requestsReceivedOn[1]).toBeGreaterThan(client.requestsReceivedOn[0]);
-        const elapsedMilliseconds = updateTime - client.requestsReceivedOn[1];
+        const elapsedMilliseconds = client.requestsReceivedOn[1] - updateTime;
         expect(elapsedMilliseconds).toBeLessThan(100);
       });
     });

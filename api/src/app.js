@@ -19,8 +19,8 @@ export default (config) => {
   const crypto = createCrypto(config);
   const database = createDatabase(config, crypto.hash);
   const setTrace = setRequestTrace(database, crypto.hash, crypto.createKeySync);
-  applicationMiddleware.useRequestTrace(setTrace);
   applicationMiddleware.requireUserAgent();
+  applicationMiddleware.useRequestTrace(setTrace);
 
   const routeHandler = routesWith(api);
   const bodyparser = createBodyparser(sanitizer);
