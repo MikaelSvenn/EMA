@@ -3,7 +3,7 @@ import responseTime from 'superagent-response-time';
 import { http, redis } from '../integrationtest';
 
 describe('GET /ping', () => {
-  afterAll(() => {
+  afterEach(() => {
     redis.flushall();
   });
 

@@ -1,4 +1,7 @@
-export default (hash, sessionKey, signatureKey) => (trace, client, timestamp = new Date()) => {
+export default (hash, keyContext) => (trace, client, timestamp = new Date()) => {
+  const sessionKey = keyContext.getSessionKey();
+  const signatureKey = keyContext.getSignatureKey();
+
   const updatedTrace = Object.assign({}, trace);
   delete updatedTrace.value.signature;
 

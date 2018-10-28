@@ -2,7 +2,8 @@ import applyHelmet from './helmet';
 import applyExceptionHandler from './exceptionHandler';
 import applyProxy from './proxy';
 import applyRequireUserAgent from './requireUserAgent';
-import applyRequestTrace from './trace';
+import applyRequestTrace from './requestTrace';
+import applyRequestFilter from './requestFilter';
 
 export default expressApplication => ({
   useHelmet: () => {
@@ -17,7 +18,10 @@ export default expressApplication => ({
   requireUserAgent: () => {
     applyRequireUserAgent(expressApplication);
   },
-  useRequestTrace: (setTrace) => {
-    applyRequestTrace(setTrace, expressApplication);
+  useRequestTrace: (traceRequest) => {
+    applyRequestTrace(traceRequest, expressApplication);
+  },
+  useRequestFilter: (filterRequest) => {
+    applyRequestFilter(filterRequest, expressApplication);
   },
 });

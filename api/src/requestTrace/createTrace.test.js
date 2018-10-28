@@ -7,7 +7,13 @@ describe('Create trace should set', () => {
   beforeEach(() => {
     hash = jest.fn();
     hash.mockImplementation((content, key) => `${content}-hashedwith-${key}`);
-    const createTrace = createTraceFactory(hash, 'sessionkey', 'signaturekey');
+
+    const keyContext = {
+      getSessionKey: () => 'sessionkey',
+      getSignatureKey: () => 'signaturekey',
+    };
+
+    const createTrace = createTraceFactory(hash, keyContext);
     result = createTrace({
       ip: 'clientIp',
       userAgent: 'currentClientUserAgent',

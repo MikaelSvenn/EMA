@@ -1,5 +1,8 @@
-export default (hash, sessionKey, signatureKey) => (client, timestamp = new Date()) => {
+export default (hash, keyContext) => (client, timestamp = new Date()) => {
   const clients = {};
+  const sessionKey = keyContext.getSessionKey();
+  const signatureKey = keyContext.getSignatureKey();
+
   const currentClient = hash(client.userAgent, sessionKey);
   clients[currentClient] = {
     requestsReceivedOn: [timestamp.getTime()],

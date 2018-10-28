@@ -1,4 +1,4 @@
-import verifySignatureFactory from './verifySignature';
+import verifyTraceFactory from './verifyTrace';
 import createHash from '../crypto/hash';
 
 describe('Verify trace signature', () => {
@@ -18,7 +18,7 @@ describe('Verify trace signature', () => {
     const hash = createHash();
     content.value.signature = hash(JSON.stringify(content.value), key);
 
-    verifySignature = verifySignatureFactory(hash);
+    verifySignature = verifyTraceFactory(hash);
   });
 
   it('should not throw when signature matches with content', () => {

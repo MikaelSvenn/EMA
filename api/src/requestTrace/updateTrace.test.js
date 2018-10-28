@@ -9,8 +9,13 @@ describe('Update trace', () => {
   beforeEach(() => {
     const hash = jest.fn();
     hash.mockImplementation((content, key) => `${content}-${key}`);
-    const createTrace = createTraceFactory(hash, 'sessionkey', 'signaturekey');
-    updateTrace = updateTraceFactory(hash, 'sessionkey', 'signaturekey');
+    const keyContext = {
+      getSessionKey: () => 'sessionkey',
+      getSignatureKey: () => 'signaturekey',
+    };
+
+    const createTrace = createTraceFactory(hash, keyContext);
+    updateTrace = updateTraceFactory(hash, keyContext);
     trace = createTrace({
       ip: 'foobarip',
       userAgent: 'foobaragent',
@@ -66,7 +71,7 @@ describe('Update trace', () => {
       });
     });
 
-    it('should sign the trace', () => {
+    it('sign the trace', () => {
       const signedContent = Object.assign({}, result.value);
       delete signedContent.signature;
 
@@ -75,7 +80,7 @@ describe('Update trace', () => {
     });
   });
 
-  describe('when client exists', () => {
+  describe('when client exists should', () => {
     let client;
 
     beforeEach(() => {
@@ -88,26 +93,26 @@ describe('Update trace', () => {
       client = result.value.clients['foobaragent-sessionkey'];
     });
 
-    it('should increase client requestCount by one', () => {
+    it('increase client requestCount by one', () => {
       expect(client.requestCount).toEqual(2);
     });
 
-    it('should append timestamp to client requestsReceivedOn', () => {
+    it('append timestamp to client requestsReceivedOn', () => {
       expect(client.requestsReceivedOn).toEqual([
         new Date(2001).getTime(),
         new Date(2003).getTime(),
       ]);
     });
 
-    it('should preserve isBlocked', () => {
+    it('preserve isBlocked', () => {
       expect(client.isBlocked).toEqual(true);
     });
 
-    it('should preserve errors', () => {
+    it('preserve errors', () => {
       expect(client.errors).toEqual(['foo']);
     });
 
-    it('should sign the trace', () => {
+    it('sign the trace', () => {
       const signedContent = Object.assign({}, result.value);
       delete signedContent.signature;
 

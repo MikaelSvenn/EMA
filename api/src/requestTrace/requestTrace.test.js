@@ -1,17 +1,13 @@
-import setTraceFactory from './setTrace';
+import requestTraceFactory from './requestTrace';
 
-describe('Set request trace', () => {
-  let setTrace;
+describe('Request trace', () => {
+  let requestTrace;
   let database;
   let hash;
-  let createKey;
-  let createdKey;
-  let createTraceFactory;
+  let keyContext;
   let createTrace;
-  let updateTraceFactory;
   let updateTrace;
-  let verifySignatureFactory;
-  let verifySignature;
+  let verifyTrace;
   let mutex;
 
   beforeEach(() => {
@@ -29,58 +25,33 @@ describe('Set request trace', () => {
 
     hash = jest.fn();
     hash.mockReturnValue('hashedClientId');
-    createKey = jest.fn();
-    createdKey = {
-      toString: jest.fn().mockReturnValueOnce('sessionkey').mockReturnValueOnce('signaturekey'),
+    keyContext = {
+      getSignatureKey: () => 'signature key',
+      getSessionKey: () => 'session key',
     };
-    createKey.mockReturnValue(createdKey);
 
     createTrace = jest.fn();
-    createTraceFactory = jest.fn();
-    createTraceFactory.mockReturnValue(createTrace);
     updateTrace = jest.fn();
-    updateTraceFactory = jest.fn();
-    updateTraceFactory.mockReturnValue(updateTrace);
-    verifySignature = jest.fn();
-    verifySignatureFactory = jest.fn();
-    verifySignatureFactory.mockReturnValue(verifySignature);
+    verifyTrace = jest.fn();
 
-    setTrace = setTraceFactory(database, hash, createKey, createTraceFactory, updateTraceFactory, verifySignatureFactory);
-  });
-
-  it('initialization should create two keys as base64', () => {
-    expect(createKey).toHaveBeenCalledTimes(2);
-    expect(createdKey.toString.mock.calls[0][0]).toEqual('base64');
-    expect(createdKey.toString.mock.calls[1][0]).toEqual('base64');
-  });
-
-  it('initialization should initialize createTrace with both created keys', () => {
-    expect(createTraceFactory).toHaveBeenCalledWith(hash, 'sessionkey', 'signaturekey');
-  });
-
-  it('initialization should initialize updateTrace with both created keys', () => {
-    expect(updateTraceFactory).toHaveBeenCalledWith(hash, 'sessionkey', 'signaturekey');
-  });
-
-  it('initialization should initialize verifySignature', () => {
-    expect(verifySignatureFactory).toHaveBeenCalledWith(hash);
+    requestTrace = requestTraceFactory(database, keyContext, hash, createTrace, updateTrace, verifyTrace);
   });
 
   it('should create trace id from client ip', async () => {
-    await setTrace({
+    await requestTrace({
       ip: 'fooip',
     });
 
-    expect(hash).toHaveBeenCalledWith('fooip', 'sessionkey');
+    expect(hash).toHaveBeenCalledWith('fooip', 'session key');
   });
 
   it('should acquire mutex with traceId', async () => {
-    await setTrace({});
+    await requestTrace({});
     expect(database.lock).toHaveBeenCalledWith('hashedClientId');
   });
 
   it('should read given trace by id', async () => {
-    await setTrace({});
+    await requestTrace({});
     expect(database.read).toHaveBeenCalledWith('trace', 'hashedClientId');
   });
 
@@ -93,7 +64,7 @@ describe('Set request trace', () => {
       database.read.mockResolvedValue(undefined);
       database.insert.mockImplementation(value => value);
       createTrace.mockReturnValue('createdtrace');
-      result = await setTrace(client);
+      result = await requestTrace(client);
     });
 
     it('should create a new trace', () => {
@@ -109,7 +80,7 @@ describe('Set request trace', () => {
     });
 
     it('should not verify signature', () => {
-      expect(verifySignature).not.toHaveBeenCalled();
+      expect(verifyTrace).not.toHaveBeenCalled();
     });
 
     it('should not update the created trace to database', () => {
@@ -134,11 +105,11 @@ describe('Set request trace', () => {
       updateTrace.mockImplementation(value => value);
       database.read.mockResolvedValue('previouslyCreatedTrace');
       database.update.mockImplementation(value => value);
-      result = await setTrace(client);
+      result = await requestTrace(client);
     });
 
     it('should verify signature', () => {
-      expect(verifySignature).toHaveBeenCalledWith('previouslyCreatedTrace', 'signaturekey');
+      expect(verifyTrace).toHaveBeenCalledWith('previouslyCreatedTrace', 'signature key');
     });
 
     it('should not create a new trace', () => {

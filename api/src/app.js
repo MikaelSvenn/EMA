@@ -1,6 +1,7 @@
 import express from 'express';
 import middlewareWith from './middleware';
-import setRequestTrace from './requestTrace';
+import createRequestTrace from './requestTrace';
+import createRequestFilter from './requestFilter';
 import createBodyparser from './bodyparser';
 import sanitizer from './sanitizer';
 import routesWith from './route';
@@ -18,9 +19,13 @@ export default (config) => {
 
   const crypto = createCrypto(config);
   const database = createDatabase(config, crypto.hash);
-  const setTrace = setRequestTrace(database, crypto.hash, crypto.createKeySync);
+
+  const requestTrace = createRequestTrace(database, crypto.keyContext, crypto.hash);
   applicationMiddleware.requireUserAgent();
-  applicationMiddleware.useRequestTrace(setTrace);
+  applicationMiddleware.useRequestTrace(requestTrace);
+
+  const requestFilter = createRequestFilter(database, crypto.keyContext, crypto.hash);
+  applicationMiddleware.useRequestFilter(requestFilter);
 
   const routeHandler = routesWith(api);
   const bodyparser = createBodyparser(sanitizer);
