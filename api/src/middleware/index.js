@@ -4,6 +4,7 @@ import applyProxy from './proxy';
 import applyRequireUserAgent from './requireUserAgent';
 import applyRequestTrace from './requestTrace';
 import applyRequestFilter from './requestFilter';
+import preventBlockedClients from './preventBlockedClients';
 
 export default expressApplication => ({
   useHelmet: () => {
@@ -23,5 +24,8 @@ export default expressApplication => ({
   },
   useRequestFilter: (filterRequest) => {
     applyRequestFilter(filterRequest, expressApplication);
+  },
+  preventBlockedClients: () => {
+    preventBlockedClients(expressApplication);
   },
 });

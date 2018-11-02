@@ -23,6 +23,7 @@ export default (config) => {
   const requestTrace = createRequestTrace(database, crypto.keyContext, crypto.hash);
   applicationMiddleware.requireUserAgent();
   applicationMiddleware.useRequestTrace(requestTrace);
+  applicationMiddleware.preventBlockedClients();
 
   const requestFilter = createRequestFilter(database, crypto.keyContext, crypto.hash);
   applicationMiddleware.useRequestFilter(requestFilter);
