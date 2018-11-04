@@ -71,6 +71,10 @@ describe('Update trace', () => {
       });
     });
 
+    it('set the given client as lastClient', () => {
+      expect(result.value.lastClient).toEqual('barfooagent-sessionkey');
+    });
+
     it('sign the trace', () => {
       const signedContent = Object.assign({}, result.value);
       delete signedContent.signature;
@@ -110,6 +114,18 @@ describe('Update trace', () => {
 
     it('preserve errors', () => {
       expect(client.errors).toEqual(['foo']);
+    });
+
+    it('overwrite the previous lastClient with current client', () => {
+      result = updateTrace(trace, {
+        userAgent: 'foo',
+      }, new Date(2003));
+
+      result = updateTrace(trace, {
+        userAgent: 'bar',
+      }, new Date(2003));
+
+      expect(result.value.lastClient).toEqual('bar-sessionkey');
     });
 
     it('sign the trace', () => {

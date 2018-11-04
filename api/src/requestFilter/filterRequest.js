@@ -1,3 +1,3 @@
-export default filterByClientCount => async (trace) => {
-  await filterByClientCount(trace);
+export default filters => async (trace) => {
+  await Promise.all(filters.map(async filter => filter(trace)));
 };

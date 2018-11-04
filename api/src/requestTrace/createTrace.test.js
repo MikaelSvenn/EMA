@@ -55,6 +55,10 @@ describe('Create trace should set', () => {
       expect(result.value.errors).toEqual([]);
     });
 
+    it('given clientId as lastClient', () => {
+      expect(result.value.lastClient).toEqual('currentClientUserAgent-hashedwith-sessionkey');
+    });
+
     describe('clients with', () => {
       let client;
 

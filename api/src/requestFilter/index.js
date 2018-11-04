@@ -1,13 +1,15 @@
 import blockTraceFactory from './blockTrace';
-import filterByTraceClientCountFactory from './filterByTraceClientCount';
+import filterByTraceClientCount from './filterByTraceClientCount';
+import filterByClientRequestCount from './filterByClientRequestCount';
 import filterRequestFactory from './filterRequest';
 
 export default (database, keyContext, hash) => {
   const blockTrace = blockTraceFactory(database, keyContext, hash);
-
-  const filterByTraceClientCount = filterByTraceClientCountFactory(blockTrace);
-  const filterRequest = filterRequestFactory(filterByTraceClientCount);
+  const filters = [
+    filterByTraceClientCount(blockTrace),
+    filterByClientRequestCount(blockTrace),
+  ];
+  const filterRequest = filterRequestFactory(filters);
 
   return filterRequest;
 };
-

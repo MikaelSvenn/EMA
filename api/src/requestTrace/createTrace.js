@@ -24,6 +24,7 @@ export default (hash, keyContext) => (client, timestamp = new Date()) => {
     },
   };
 
+  trace.value.lastClient = currentClient;
   const traceContent = JSON.stringify(trace.value);
   trace.value.signature = hash(traceContent, signatureKey);
 
