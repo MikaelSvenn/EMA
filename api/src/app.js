@@ -16,6 +16,7 @@ export default (config) => {
 
   applicationMiddleware.useHelmet();
   applicationMiddleware.useProxy();
+  applicationMiddleware.delayExecution();
 
   const crypto = createCrypto(config);
   const database = createDatabase(config, crypto.hash);

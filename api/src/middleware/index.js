@@ -5,6 +5,7 @@ import applyRequireUserAgent from './requireUserAgent';
 import applyRequestTrace from './requestTrace';
 import applyRequestFilter from './requestFilter';
 import preventBlockedClients from './preventBlockedClients';
+import delayExecution from './delayExecution';
 
 export default expressApplication => ({
   useHelmet: () => {
@@ -27,5 +28,8 @@ export default expressApplication => ({
   },
   preventBlockedClients: () => {
     preventBlockedClients(expressApplication);
+  },
+  delayExecution: () => {
+    delayExecution(expressApplication);
   },
 });
