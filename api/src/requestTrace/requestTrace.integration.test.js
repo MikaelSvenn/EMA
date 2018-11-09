@@ -172,7 +172,7 @@ describe('Request trace', () => {
         expect(client.requestsReceivedOn.length).toEqual(2);
         expect(client.requestsReceivedOn[1]).toBeGreaterThan(client.requestsReceivedOn[0]);
         const elapsedMilliseconds = client.requestsReceivedOn[1] - updateTime;
-        expect(elapsedMilliseconds).toBeLessThan(100);
+        expect(elapsedMilliseconds).toBeLessThan(500);
       });
     });
   });
