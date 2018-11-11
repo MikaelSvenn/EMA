@@ -200,7 +200,7 @@ describe('Request trace', () => {
       trace = await redis.getAsync(initialTraceKey);
       trace = JSON.parse(trace);
 
-      trace.value.isBlocked = true;
+      trace.value.requestCount = 9;
       await redis.setAsync([initialTraceKey, JSON.stringify(trace), 'EX', 600]);
     });
 

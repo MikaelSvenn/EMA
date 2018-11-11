@@ -1,5 +1,5 @@
 import { http, redis, pingTimes } from '../integrationtest';
-import requestFilterTest from './requestFilter.integration.test';
+import requestFilterTest from './requestFilterTestBase';
 
 requestFilterTest((expectRequestNotProcessed) => {
   describe('by user agent count from a singe IP address should', () => {
@@ -7,9 +7,6 @@ requestFilterTest((expectRequestNotProcessed) => {
 
     afterEach(() => {
       redis.flushall();
-    });
-
-    afterEach(() => {
       lastResult = undefined;
     });
 
@@ -22,7 +19,7 @@ requestFilterTest((expectRequestNotProcessed) => {
       await pingTimes(4);
       lastResult = await http()
         .get('/ping')
-        .set('user-agent', '5');
+        .set('user-agent', { userAgent: '5' });
       expect(lastResult.status).toEqual(404);
     });
 
@@ -30,7 +27,7 @@ requestFilterTest((expectRequestNotProcessed) => {
       await pingTimes(5);
       lastResult = await http()
         .get('/ping')
-        .set('user-agent', '1');
+        .set('user-agent', { userAgent: '1' });
 
       expect(lastResult.status).toEqual(404);
     });

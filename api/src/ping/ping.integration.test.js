@@ -22,7 +22,7 @@ describe('GET /ping', () => {
 
   it('should execute subsequent requests with delay difference of over 80ms', async () => {
     const responseTimes = [];
-    while (responseTimes.length < 10) {
+    while (responseTimes.length <= 10) {
       await http().get('/ping').use(responseTime((_, time) => {
         responseTimes.push(time);
       }));

@@ -1,15 +1,15 @@
 /* eslint no-await-in-loop: 0 */
-/* eslint no-param-reassign: 0 */
 
-export default http => async (amountOfCalls, userAgent) => {
+export default http => async (amountOfCalls, options = {}) => {
   let lastResult;
-  while (amountOfCalls > 0) {
-    const givenUserAgent = userAgent || amountOfCalls;
-    lastResult = await http()
+  let requestCount = 1;
+  while (requestCount <= amountOfCalls) {
+    const givenUserAgent = options.userAgent || requestCount;
+    lastResult = await http(options.http)
       .get('/ping')
       .set('user-agent', givenUserAgent);
 
-    amountOfCalls -= 1;
+    requestCount += 1;
   }
 
   return lastResult;
