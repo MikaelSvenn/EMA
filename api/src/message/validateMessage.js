@@ -1,5 +1,9 @@
-const error = (cause) => {
-  throw new Error(`Message validation error - ${cause}`);
+const error = (message) => {
+  throw new Error({
+    source: 'validation',
+    cause: 'messageValidation',
+    message,
+  });
 };
 
 export default (content) => {

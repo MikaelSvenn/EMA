@@ -27,6 +27,9 @@ describe('Verify trace signature', () => {
 
   it('should throw when signature does not match with content', () => {
     content.value.foobar = 'bar';
-    expect(() => verifySignature(content, key)).toThrowError('traceSignatureMismatch');
+    expect(() => verifySignature(content, key)).toThrowError(new Error({
+      source: 'trace',
+      cause: 'signature',
+    }));
   });
 });

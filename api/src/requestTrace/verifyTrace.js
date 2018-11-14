@@ -5,6 +5,9 @@ export default hash => (trace, key) => {
 
   const signature = hash(JSON.stringify(content), key);
   if (expectedSignature !== signature) {
-    throw new Error('traceSignatureMismatch');
+    throw new Error({
+      source: 'trace',
+      cause: 'signature',
+    });
   }
 };

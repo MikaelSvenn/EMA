@@ -1,3 +1,6 @@
 export default () => {
-  throw new Error('Potentially malicious content received');
+  throw new Error({
+    source: 'sanitizer',
+    cause: 'contentSanitized',
+  });
 };

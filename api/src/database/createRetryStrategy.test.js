@@ -17,14 +17,20 @@ describe('retry strategy', () => {
         code: 'ECONNREFUSED',
       },
     });
-    expect(actual).toEqual(new Error('The database connection was refused.'));
+    expect(actual).toEqual(new Error({
+      source: 'database',
+      cause: 'connectionRefused',
+    }));
   });
 
   it('should return error when retry attempt exceeds maximum retries', () => {
     const actual = strategy({
       attempt: 11,
     });
-    expect(actual).toEqual(new Error('Could not connect to the database after 10 retries'));
+    expect(actual).toEqual(new Error({
+      source: 'database',
+      cause: 'offline',
+    }));
   });
 
   it('should return the given reconnect value', () => {

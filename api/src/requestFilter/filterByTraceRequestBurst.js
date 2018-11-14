@@ -3,6 +3,9 @@ export default (blockTrace, exceedsBurstLimit) => async (trace) => {
 
   if (exceedsBurstLimit(requests)) {
     await blockTrace(trace);
-    throw new Error('Trace request burst exceeded');
+    throw new Error({
+      source: 'filter',
+      cause: 'traceRequestBurst',
+    });
   }
 };

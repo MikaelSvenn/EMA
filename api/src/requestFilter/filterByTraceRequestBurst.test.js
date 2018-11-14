@@ -24,7 +24,10 @@ describe('Filter by trace request burst should', () => {
   });
 
   it('not block the trace when the burst limit is not exceeded', async () => {
-    await expect(filter(trace)).resolves.not.toThrow();
+    await expect(filter(trace)).resolves.not.toThrowError({
+      source: 'filter',
+      cause: 'traceRequestBurst',
+    });
     expect(blockTrace).not.toHaveBeenCalled();
   });
 

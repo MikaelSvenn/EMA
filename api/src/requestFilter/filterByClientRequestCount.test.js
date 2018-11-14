@@ -41,7 +41,10 @@ describe('Filter by client request count', () => {
   describe('when request count is over 20', () => {
     it('should block the given client from the given trace and throw', async () => {
       trace.value.clients.foo.requestCount = 21;
-      await expect(filter(trace)).rejects.toThrow();
+      await expect(filter(trace)).rejects.toThrowError(new Error({
+        source: 'filter',
+        cause: 'clientRequestCount',
+      }));
       expect(blockTrace).toHaveBeenCalledWith(trace, 'foo');
     });
   });

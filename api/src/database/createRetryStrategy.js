@@ -1,10 +1,16 @@
 export default options => (retry) => {
   if (retry.error && retry.error.code === 'ECONNREFUSED') {
-    return new Error('The database connection was refused.');
+    return new Error({
+      source: 'database',
+      cause: 'connectionRefused',
+    });
   }
 
   if (retry.attempt > options.connectionRetries) {
-    return new Error(`Could not connect to the database after ${options.connectionRetries} retries`);
+    return new Error({
+      source: 'database',
+      cause: 'offline',
+    });
   }
 
   return options.reconnectInMilliseconds;

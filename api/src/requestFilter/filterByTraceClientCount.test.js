@@ -37,7 +37,10 @@ describe('Filter by trace client count', () => {
     });
 
     it('should block the trace and throw error', async () => {
-      await expect(filter(trace)).rejects.toThrow();
+      await expect(filter(trace)).rejects.toThrowError(new Error({
+        source: 'filter',
+        cause: 'traceClientCount',
+      }));
       expect(blockTrace).toHaveBeenCalledWith(trace);
     });
   });
